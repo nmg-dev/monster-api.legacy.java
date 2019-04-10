@@ -15,9 +15,9 @@ public abstract class ApiWorker implements Runnable {
 	
 	public void run() {
 		//
-		this.willRun();
-		
 		try {
+			this.willRun();
+		
 			this.proceed();			
 		} catch(Exception ex) {
 			this.onError(ex);

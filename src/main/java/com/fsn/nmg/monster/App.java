@@ -8,7 +8,9 @@ import java.util.HashMap;
  */
 public class App 
 {
-	protected static final HashMap<String, ApiManager> managers = new HashMap<String, ApiManager>(); 
+	private static final String envPath = "./.env";
+	protected static final HashMap<String, ApiManager> managers = new HashMap<String, ApiManager>();
+//	protected static final AppConfigure appConfig = new AppConfigure(); 
 
 	
     public static void main( String[] args )

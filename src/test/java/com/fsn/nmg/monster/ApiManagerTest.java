@@ -4,7 +4,9 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-public class ApiManagerTest {
+import junit.framework.TestCase;
+
+public class ApiManagerTest extends TestCase {
 	static final int maxThread = 3;
 	static final int maxInterval = 5*1000;
 	static final int maxUsage = 5;
@@ -61,7 +63,8 @@ public class ApiManagerTest {
 		
 		while(0<manager.countRunnings()) {
 			try {
-				Thread.sleep(100);
+				System.out.println(String.format("run countings %d", manager.countRunnings()));
+				Thread.sleep(10);
 				manager.proceed(2);
 			}
 			catch(RemoteApiException ex) {

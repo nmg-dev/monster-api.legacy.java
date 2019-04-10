@@ -65,6 +65,9 @@ public class ApiManager {
 	}
 	
 	public void proceed(int estUsage) throws RemoteApiException {
+		// return if stack empty
+		if(stack.size()<=0) return;
+		
 		// check api window interval
 		if(estUsage <= 0 || this.countTraffic(estUsage) < 0) {
 			throw new RemoteApiException(RemoteApiException.ExType.API_LIMIT_EXCEEDS);
@@ -74,8 +77,6 @@ public class ApiManager {
 		if(countRunnings() < maxThreads) {
 			// pop stack and run
 			final Entry<String, String> entry = stack.firstEntry();
-			if(entry==null || entry.getKey()==null)
-				throw new RemoteApiException(RemoteApiException.ExType.API_LIMIT_EXCEEDS);
 			stack.remove(entry.getKey());
 			
 			// start thread

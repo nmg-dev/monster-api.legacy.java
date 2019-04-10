@@ -10,6 +10,8 @@ public class RemoteApiException extends Exception {
 	
 	public enum ExType {
 		API_LIMIT_EXCEEDS,
+		
+		NOT_SPECIFIED,
 	}
 
 }
