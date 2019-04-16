@@ -22,4 +22,6 @@ abstract class AbstractService {
 	protected static String getConfig(String key) {
 		return _config.getProperty(key);
 	}
+	
+	
 }
