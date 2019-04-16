@@ -74,20 +74,20 @@ public class ApiManager {
 		}
 				
 		// check if max thread limit
-		if(countRunnings() < maxThreads) {
-			// pop stack and run
-			final Entry<String, String> entry = stack.firstEntry();
-			stack.remove(entry.getKey());
-			
-			// start thread
-			final ApiWorker worker = new SampleWorker(entry.getValue());
-			final Thread apiThread = new Thread(worker);
-			
-			running.add(apiThread);
-			apiThread.start();
-			this.trafficUsage -= estUsage;
-			
-		}
+//		if(countRunnings() < maxThreads) {
+//			// pop stack and run
+//			final Entry<String, String> entry = stack.firstEntry();
+//			stack.remove(entry.getKey());
+//			
+//			// start thread
+//			final ApiWorker worker = new SampleWorker(entry.getValue());
+//			final Thread apiThread = new Thread(worker);
+//			
+//			running.add(apiThread);
+//			apiThread.start();
+//			this.trafficUsage -= estUsage;
+//			
+//		}
 	}
 	
 	public boolean load(String key, String val) {

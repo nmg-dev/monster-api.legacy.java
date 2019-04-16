@@ -2,10 +2,6 @@ package com.fsn.nmg.monster;
 
 import java.util.HashMap;
 
-/**
- * Hello world!
- *
- */
 public class App 
 {
 	private static final String envPath = "./.env";
