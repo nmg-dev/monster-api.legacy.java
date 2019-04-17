@@ -4,10 +4,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
 
+/**
+ * @author yg.song@nextmediagroup.co.kr
+ *
+ */
 public class AppConfigure extends Properties {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 2745337268832677797L;
 	
 	private static final String envPath = "./.env";
@@ -16,23 +17,39 @@ public class AppConfigure extends Properties {
 	
 	private static AppConfigure _instance;
 	
+	/**
+	 * @param path
+	 * @return
+	 */
 	public static AppConfigure get(String path) {
 		if(_instance == null) _instance = new AppConfigure(path);
 		return _instance;
 	}
 	
+	/**
+	 * @return
+	 */
 	public static AppConfigure get() {
 		return get(envPath);
 	}
 	
+	/**
+	 * @param path
+	 */
 	protected AppConfigure(String path) {
 		initialize(path);
 	}
 	
+	/**
+	 * @return
+	 */
 	public boolean hasLoaded() {
 		return containsKey(ENVKEY_CONFIG_LOADED);
 	}
 	
+	/**
+	 * @param path
+	 */
 	protected void initialize(String path) {
 		int retries = 5;
 		while(0<--retries && !hasLoaded()) {			

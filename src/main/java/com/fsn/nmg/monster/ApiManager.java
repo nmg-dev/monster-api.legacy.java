@@ -5,6 +5,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+/**
+ * @author yg.song@nextmediagroup.co.kr
+ *
+ */
 public class ApiManager {
 	
 	protected final TreeMap<String, String> stack;
@@ -16,6 +20,12 @@ public class ApiManager {
 	protected long lastIntervalChecked;
 	protected int trafficUsage;
 	
+	/**
+	 * @param group
+	 * @param threads
+	 * @param limits
+	 * @param interval
+	 */
 	public ApiManager(String group, int threads, int limits, long interval) {
 		this.groupName = group;
 		this.maxThreads = threads;
@@ -28,6 +38,10 @@ public class ApiManager {
 		this.clear();
 	}
 	
+	/**
+	 * @param estimatedUsage
+	 * @return
+	 */
 	protected int countTraffic(int estimatedUsage) {
 		final long now = System.currentTimeMillis();
 		if(lastIntervalChecked + limitInterval < now) {
@@ -37,6 +51,9 @@ public class ApiManager {
 		return this.limitWindow - estimatedUsage;
 	}
 	
+	/**
+	 * @return
+	 */
 	protected int countRunnings() {
 		final ArrayList<Thread> dels = new ArrayList<Thread>();
 		
@@ -53,10 +70,16 @@ public class ApiManager {
 		return this.running.size();
 	}
 	
+	/**
+	 * @return
+	 */
 	public int runners() {
 		return running.size();
 	}
 	
+	/**
+	 * 
+	 */
 	public void clear() {
 		this.lastIntervalChecked = 0;
 		this.trafficUsage = 0;
@@ -64,6 +87,10 @@ public class ApiManager {
 		this.running.clear();
 	}
 	
+	/**
+	 * @param estUsage
+	 * @throws RemoteApiException
+	 */
 	public void proceed(int estUsage) throws RemoteApiException {
 		// return if stack empty
 		if(stack.size()<=0) return;
@@ -90,6 +117,11 @@ public class ApiManager {
 //		}
 	}
 	
+	/**
+	 * @param key
+	 * @param val
+	 * @return
+	 */
 	public boolean load(String key, String val) {
 		if(stack.containsKey(key)) return false;
 		
@@ -97,10 +129,18 @@ public class ApiManager {
 		return true;
 	}
 	
+	/**
+	 * @param ent
+	 * @return
+	 */
 	public boolean load(Entry<String, String> ent) {
 		return this.load(ent.getKey(), ent.getValue());
 	}
 	
+	/**
+	 * @param vals
+	 * @return
+	 */
 	public int loads(Map<String, String> vals) {
 		int cnt = 0;
 		for(Entry<String, String> e : vals.entrySet()) {

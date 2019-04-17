@@ -21,6 +21,12 @@
       <version>4.12</version>
       <scope>test</scope>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
+	<dependency>
+	    <groupId>com.google.code.gson</groupId>
+	    <artifactId>gson</artifactId>
+	    <version>[2.8.5,)</version>
+	</dependency>
     <!-- https://mvnrepository.com/artifact/com.google.api-ads/ads-lib -->
 	<dependency>
 	    <groupId>com.google.api-ads</groupId>
@@ -33,10 +39,5 @@
       <version>RELEASE</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/com.facebook.business.sdk/facebook-java-business-sdk -->
-	<dependency>
-	    <groupId>com.facebook.business.sdk</groupId>
-	    <artifactId>facebook-java-business-sdk</artifactId> 
-	    <version>[3.0.0,)</version>
-	</dependency>
   </dependencies>
 </project>

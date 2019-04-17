@@ -1,25 +1,33 @@
 package com.fsn.nmg.monster.service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import com.fsn.nmg.monster.datamodel.AccessAccount;
 import com.fsn.nmg.monster.datamodel.Account;
 
+/**
+ * Sample service to test abstract service architecture
+ * 
+ * @author yg.song@nextmediagroup.co.kr
+ */
 class ServiceTest extends AbstractService {
 
+	/**
+	 * 
+	 */
 	protected ServiceTest() {
 		super(null);
 	}
 
+
+	/**
+	 *
+	 */
 	@Override
-	protected void retrieveAccounts() {
+	protected void retrieveUserInfo() {
 		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
-	protected void retrieveAccountData() {
+	protected void retrieveCreativeData() {
 		// TODO Auto-generated method stub
 		
 	}

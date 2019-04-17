@@ -1,25 +1,36 @@
 package com.fsn.nmg.monster.service;
 
-import java.util.List;
-
 import com.fsn.nmg.monster.datamodel.AccessAccount;
 import com.fsn.nmg.monster.datamodel.Account;
 
+/**
+ * @author yg.song@nextmediagroup.co.kr
+ *
+ */
 public class ServiceGoogle extends AbstractService {
 	
+	/**
+	 * @param user
+	 */
 	protected ServiceGoogle(AccessAccount user) {
 		super(user);
 	}
 
+	
+
+	/**
+	 *
+	 */
 	@Override
-	protected void retrieveAccounts() {
+	protected void retrieveUserInfo() {
 		// TODO Auto-generated method stub
+
 	}
 
 	@Override
-	protected void retrieveAccountData() {
+	protected void retrieveCreativeData() {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 }

@@ -5,8 +5,16 @@ import java.util.Collection;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+/**
+ * @author yg.song@nextmediagroup.co.kr
+ *
+ */
 public class Account {
 	protected final static TreeMap<String, Account> TotalAccounts = new TreeMap<String, Account>();
+	/**
+	 * @param adAccountId
+	 * @return
+	 */
 	public static Account get(String adAccountId) {
 		if(!TotalAccounts.containsKey(adAccountId)) {
 			final Account acc = new Account(adAccountId);
@@ -25,6 +33,9 @@ public class Account {
 	protected final ArrayList<String> _idStacks = new ArrayList<String>();
 	
 	
+	/**
+	 * @param id
+	 */
 	protected Account(String id) {
 		this._id = id;
 		
@@ -33,18 +44,38 @@ public class Account {
 		this.creativeMap = new TreeMap<String, CampaignCreative>();
 	}
 	
+	/**
+	 * @return
+	 */
 	public String getId() {
 		return this._id;
 	}
 	
+	/**
+	 * @return
+	 */
 	public Collection<String> campaignIds() {
 		return campaignMap.keySet();
 	}
 	
+	/**
+	 * @param campaignId
+	 * @return
+	 */
 	public Collection<String> campaignGroups(String campaignId) {
 		return campaignMap.get(campaignId);
-	} 
+	}
 	
+	public boolean hasSet() {
+		return !creativeMap.isEmpty();
+	}
+	
+	/**
+	 * @param campaignId
+	 * @param groupId
+	 * @param id
+	 * @return
+	 */
 	public CampaignCreative creative(String campaignId, String groupId, String id) {
 		appendCampaignGroupMapping(campaignId, groupId);
 		appendAdgroupCreativeMapping(groupId, id);
@@ -55,6 +86,10 @@ public class Account {
 		return creativeMap.get(id);
 	}
 	
+	/**
+	 * @param campaignId
+	 * @return
+	 */
 	public CampaignCreative[] campaignCreatives(String campaignId) {
 		if(!campaignMap.containsKey(campaignId))
 			return null;
@@ -69,6 +104,10 @@ public class Account {
 		return _getCreatives();
 	}
 	
+	/**
+	 * @param groupId
+	 * @return
+	 */
 	public CampaignCreative[] groupCreatives(String groupId) {
 		if(!adgroupMap.containsKey(groupId))
 			return null;
@@ -82,6 +121,10 @@ public class Account {
 	}
 	
 	
+	/**
+	 * @param campaignId
+	 * @param groupId
+	 */
 	protected void appendCampaignGroupMapping(String campaignId, String groupId) {
 		if(!campaignMap.containsKey(campaignId))
 			campaignMap.put(campaignId, new TreeSet<String>());
@@ -89,6 +132,10 @@ public class Account {
 			campaignMap.get(campaignId).add(groupId);
 	}
 	
+	/**
+	 * @param groupId
+	 * @param id
+	 */
 	protected void appendAdgroupCreativeMapping(String groupId, String id) {
 		if(!adgroupMap.containsKey(groupId))
 			adgroupMap.put(groupId, new TreeSet<String>());
@@ -97,6 +144,9 @@ public class Account {
 	}
 
 
+	/**
+	 * @return
+	 */
 	protected CampaignCreative[] _getCreatives() {
 		final CampaignCreative[] ccs = new CampaignCreative[_idStacks.size()];
 		for(int i=0; i<ccs.length; i++) {
@@ -105,6 +155,6 @@ public class Account {
 		
 		_idStacks.clear();
 		return ccs;
-	}
+	} 
 	
 }

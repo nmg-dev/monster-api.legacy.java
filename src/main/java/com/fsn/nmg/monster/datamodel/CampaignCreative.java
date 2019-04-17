@@ -3,12 +3,16 @@ package com.fsn.nmg.monster.datamodel;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+/**
+ * 
+ * @author yg.song@nextmediagroup.co.kr
+ *
+ */
 public class CampaignCreative {
 	protected final Account _account;
 	protected String _campaignId;
@@ -20,9 +24,17 @@ public class CampaignCreative {
 	
 	protected final HashMap<LocalDate, Integer> dateIndexMap;
 	
+	protected boolean _campaignActive;
+	protected boolean _groupActive;
 	protected boolean _active;
 	
 	
+	/**
+	 * @param account
+	 * @param campaign
+	 * @param adgroup
+	 * @param id
+	 */
 	protected CampaignCreative(Account account, String campaign, String adgroup, String id) {
 		this._account = account;
 		this._campaignId = campaign;
@@ -34,10 +46,17 @@ public class CampaignCreative {
 		this.dateIndexMap = new HashMap<LocalDate, Integer>();
 	}
 	
+	/**
+	 * @return
+	 */
 	public String getId() {
 		return this._id;
 	}
 	
+	/**
+	 * @param from
+	 * @param till
+	 */
 	public void setPeriod(LocalDate from, LocalDate till) {
 		LocalDate cs = from;
 		while(cs.compareTo(till) <=0) {
@@ -48,24 +67,56 @@ public class CampaignCreative {
 		}
 	}
 	
-	public boolean isActive() {
-		return this._active;
+	public boolean isCampaignActive() {
+		return this._campaignActive;
 	}
 	
+	public boolean isGroupActive() {
+		return this._campaignActive && this._groupActive;
+	}
+	/**
+	 * @return
+	 */
+	public boolean isActive() {
+		return this._campaignActive && this._groupActive && this._active;
+	}
+	
+	/**
+	 * @return
+	 */
 	public boolean hasSet() {
 		return !this._values.isEmpty(); 
 	}
 	
+	/**
+	 * @param active
+	 */
 	public void setActive(boolean active) {
 		this._active = active;
 	}
 	
+	public void setGroupActive(boolean active) {
+		this._groupActive = active;
+	}
+	
+	public void setCampaignActive(boolean active) {
+		this._campaignActive = active;
+	}
+	
+	/**
+	 * @param date
+	 * @return
+	 */
 	protected int dateIndexing(LocalDate date) {
 		if(!dateIndexMap.containsKey(date))
 			dateIndexMap.put(date, dateIndexMap.size());
 		return dateIndexMap.get(date);
 	}
 	
+	/**
+	 * @param key
+	 * @return
+	 */
 	protected ArrayList<String> columnIndexing(String key) {
 		if(!_values.containsKey(key)) {
 			_columns.add(key);
@@ -74,6 +125,11 @@ public class CampaignCreative {
 		return _values.get(key);
 	}
 	
+	/**
+	 * @param date
+	 * @param key
+	 * @param value
+	 */
 	public void putValue(LocalDate date, String key, String value) {
 		// create date index if not exists
 		final int dateIdx = dateIndexing(date);
@@ -86,6 +142,10 @@ public class CampaignCreative {
 		vals.set(dateIdx, value);
 	}
 	
+	/**
+	 * @param date
+	 * @param values
+	 */
 	public void putValuesAt(LocalDate date, Map<String,String> values) {
 		final int dateIdx = dateIndexing(date);
 		for(Entry<String,String> e : values.entrySet()) {
@@ -98,6 +158,11 @@ public class CampaignCreative {
 	}
 	
 	
+	/**
+	 * @param date
+	 * @param key
+	 * @return
+	 */
 	public String getValue(LocalDate date, String key) {
 		if(dateIndexMap.containsKey(date) && _values.containsKey(key)) {
 			return _values.get(key).get(dateIndexMap.get(date));
@@ -106,6 +171,10 @@ public class CampaignCreative {
 		}
 	}
 	
+	/**
+	 * @param date
+	 * @return
+	 */
 	public String[] getValuesAt(LocalDate date) {
 		if(dateIndexMap.containsKey(date)) {
 			final int dateIndex = dateIndexMap.get(date); 
@@ -120,6 +189,9 @@ public class CampaignCreative {
 		}
 	}
 	
+	/**
+	 * @return
+	 */
 	public List<String> columns() {
 		return this._columns;
 	}

@@ -6,8 +6,16 @@ import org.junit.Test;
 
 import com.fsn.nmg.monster.AppConfigure;
 
+/**
+ * testing for AccessAccount class
+ * @author yg.song@nextmediagroup.co.kr
+ *
+ */
 public class AccessTest {
 
+	/**
+	 * test building AccessAccount
+	 */
 	@Test
 	public void testCreate() {
 		assertNotNull(new AccessAccount(null, null));
