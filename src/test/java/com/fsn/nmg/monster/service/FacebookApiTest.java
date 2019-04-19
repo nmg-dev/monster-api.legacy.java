@@ -1,6 +1,10 @@
 package com.fsn.nmg.monster.service;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Map;
 
@@ -8,6 +12,8 @@ import org.junit.Test;
 
 import com.fsn.nmg.monster.AppConfigure;
 import com.fsn.nmg.monster.datamodel.AccessAccount;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 public class FacebookApiTest {
 	
@@ -73,6 +79,32 @@ public class FacebookApiTest {
 		final String invalidAccess = "test-access";
 		final Map<String,String> tokenInfo = ServiceFacebook.retrieveLongtermToken(invalidAccess);
 		assertFalse(tokenInfo.containsKey("access_token"));
+	}
+	
+	@Test
+	public void testBuildBatchAPIRequest() {
+		final String[] paths = new String[] {"/me", "/act", "/campaigns"};
+		final JsonArray batches = new JsonArray();
+		for(String p : paths) {
+			final JsonObject obj = ServiceFacebook._batchAPIRequest(p);
+			assertTrue(obj.has("method"));
+			assertTrue(obj.has("relative_url"));
+			batches.add(obj);
+			
+		}
+		
+		assertEquals(paths.length, batches.size());
+		for(int i=0; i<paths.length; i++) {
+			final JsonObject obj = batches.get(i).getAsJsonObject();
+			final String p = paths[i];
+			assertEquals("GET", obj.get("method").getAsString());
+			assertEquals(p, obj.get("relative_url").getAsString());
+		}
+	}
+	
+	@Test
+	public void testBatchAPIs() {
+		fail("not implemented");
 	}
 	
 

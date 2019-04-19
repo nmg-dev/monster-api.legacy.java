@@ -6,8 +6,12 @@ import java.util.TreeMap;
  * @author yg.song@nextmediagroup.co.kr
  *
  */
-public class AccessAccount {
-	protected final String _access;
+public class AccessAccount extends AbstractModel<AbstractModel,Account> {
+	private static final String ATTRIBUTE_ACCESS = "access";
+	private static final String[] ATTRIBUTE_KEYS = new String[] {
+			ATTRIBUTE_ACCESS,
+	};
+//	protected final String _access;
 	protected String _id;
 	protected TreeMap<String, Account> _accounts;
 	
@@ -16,33 +20,32 @@ public class AccessAccount {
 	 * @param id
 	 */
 	public AccessAccount(String access, String id) {
-		this._access = access;
+		super(id);
+		
+//		this._access = access;
 		this._id = id;
 		
 		this._accounts = new TreeMap<String, Account>();
 	}
 	
-	/**
-	 * @param id
-	 */
-	public void setId(String id) {
-		if(this._id == null)
-			this._id = id;
+	@Override
+	protected String[] initiateAttributes() {
+		return ATTRIBUTE_KEYS;
 	}
 	
-	/**
-	 * @return
-	 */
-	public String getId() {
-		return this._id;
+	@Override
+	protected Account createChild(String id) {
+		return Account.get(id);
 	}
 	
 	/**
 	 * @return
 	 */
 	public String getAccessToken() {
-		return this._access;
+		return getAttribute(ATTRIBUTE_ACCESS);
 	}
+
+	
 
 	
 }

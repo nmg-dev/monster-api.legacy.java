@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -50,6 +51,24 @@ public class MonsterUtilTest {
 		assertNull(illegalJsonResp);
 	}
 
-	
+	@Test
+	public void testParseJson() {
+		final String exactJson = "{\"name\":\"hello\", \"values\": [1,true,\"false\",3.2]}";
+		final String missingJson = "{asdf";
+		
+		final JsonElement parsed =MonsterUtils.parseJson(exactJson);
+		assertNull(MonsterUtils.parseJson(missingJson));
+		assertNotNull(parsed);
+		assertNotNull(parsed.getAsJsonObject());
+		final JsonObject obj = parsed.getAsJsonObject();
+		assertTrue(obj.has("name"));
+		assertTrue(obj.has("values"));
+		
+		final JsonArray values = obj.get("values").getAsJsonArray();
+		assertEquals(1, values.get(0).getAsInt());
+		assertEquals(true, values.get(1).getAsBoolean());
+		assertEquals("false", values.get(2).getAsString());
+		assertTrue(3.2 == values.get(3).getAsFloat());
+	}
 
 }

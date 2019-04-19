@@ -13,11 +13,11 @@ import java.util.Map.Entry;
  * @author yg.song@nextmediagroup.co.kr
  *
  */
-public class CampaignCreative {
-	protected final Account _account;
-	protected String _campaignId;
-	protected String _adgroupId;
-	protected String _id;
+public class Creative extends AbstractModel<AdGroup,AbstractModel> {
+	
+	private static final String[] ATTRIBUTE_KEYS = new String[] {
+			
+	};
 	
 	protected final ArrayList<String> _columns;
 	protected final HashMap<String, ArrayList<String>> _values;
@@ -35,11 +35,8 @@ public class CampaignCreative {
 	 * @param adgroup
 	 * @param id
 	 */
-	protected CampaignCreative(Account account, String campaign, String adgroup, String id) {
-		this._account = account;
-		this._campaignId = campaign;
-		this._adgroupId = adgroup;
-		this._id = id;
+	protected Creative(String id) {
+		super(id);
 		
 		this._columns = new ArrayList<String>();
 		this._values = new HashMap<String, ArrayList<String>>();
@@ -47,11 +44,14 @@ public class CampaignCreative {
 	}
 	
 	/**
+	 * public alias of get parent
 	 * @return
 	 */
-	public String getId() {
-		return this._id;
+	public AdGroup getGroup() {
+		return getParent();
 	}
+
+	
 	
 	/**
 	 * @param from
@@ -194,6 +194,16 @@ public class CampaignCreative {
 	 */
 	public List<String> columns() {
 		return this._columns;
+	}
+
+	@Override
+	protected String[] initiateAttributes() {
+		return ATTRIBUTE_KEYS;
+	}
+
+	@Override
+	protected AbstractModel createChild(String id) {
+		return null;
 	}
 	
 }
