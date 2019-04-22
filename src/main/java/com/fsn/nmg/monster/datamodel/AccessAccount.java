@@ -22,8 +22,8 @@ public class AccessAccount extends AbstractModel<AbstractModel,Account> {
 	public AccessAccount(String access, String id) {
 		super(id);
 		
-//		this._access = access;
 		this._id = id;
+		setAttribute(ATTRIBUTE_ACCESS, access);
 		
 		this._accounts = new TreeMap<String, Account>();
 	}

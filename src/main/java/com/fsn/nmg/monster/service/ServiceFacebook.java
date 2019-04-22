@@ -1,6 +1,7 @@
 package com.fsn.nmg.monster.service;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -12,6 +13,10 @@ import java.util.function.Function;
 
 import com.fsn.nmg.monster.MonsterUtils;
 import com.fsn.nmg.monster.datamodel.AccessAccount;
+import com.fsn.nmg.monster.datamodel.Account;
+import com.fsn.nmg.monster.datamodel.AdGroup;
+import com.fsn.nmg.monster.datamodel.Campaign;
+import com.fsn.nmg.monster.datamodel.Creative;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -22,7 +27,7 @@ import com.google.gson.JsonObject;
  */
 class ServiceFacebook extends AbstractService {
 	
-	private static final int API_TIMEOUT_SECONDS = 5;
+	private static final int API_TIMEOUT_SECONDS = 20;
 	private static final int BATCH_LIMIT = 50;
 	private static final boolean DEBUGGINGS = getConfig("FB_API_TESTING")!="true";
 	private static final String ENVKEY_FB_API_HOST = "FB_API_HOST";
@@ -53,6 +58,7 @@ class ServiceFacebook extends AbstractService {
 	private static final String APIKEY_CAMPAIGN_ID = "campaign_id";
 	private static final String APIKEY_ADSETS = "adsets";
 	private static final String APIKEY_ADSET_ID = "adset_id";
+	private static final String APIKEY_ADS = "ads";
 	private static final String APIKEY_DATA = "data";
 	private static final String APIKEY_ERROR = "error";
 	private static final String APIKEY_ERROR_MESSAGE = "message";
@@ -88,27 +94,12 @@ class ServiceFacebook extends AbstractService {
 		put(APIKEY_CLIENT_SECRET, getConfig(ENVKEY_FB_CLIENT_SECRET));
 	}};
 	
-	private static final HashMap<String,String> AD_ACCOUNT_INFO_PARAMS = new HashMap<String,String>() {{
-		put(APIKEY_FILEDS, getConfig(ENVKEY_FB_ADACCOUNT_FIELDS));		
-	}};
-	
-	private static final HashMap<String,String> AD_CAMPAIGN_INFO_PARAMS = new HashMap<String,String>() {{
-		put(APIKEY_FILEDS, getConfig(ENVKEY_FB_CAMPAIGN_FIELDS));
-	}};
-	
-	private static final HashMap<String,String> AD_ADGROUP_INFO_PARAMS = new HashMap<String,String>() {{
-		put(APIKEY_FILEDS, getConfig(ENVKEY_FB_ADGROUP_FIELDS));
-	}};
-	
-	private static final HashMap<String,String> AD_CREATIVE_INFO_PARAMS = new HashMap<String,String>() {{
-		put(APIKEY_FILEDS, getConfig(ENVKEY_FB_CREATIVE_FIELDS));
-	}};
-	
-	private static final HashMap<String,String> AD_ACCOUNT_INSIGHT_PARAMS = new HashMap<String,String>() {{
-		put(APIKEY_FILEDS, getConfig(ENVKEY_FB_ADINSHGIT_FIELDS));
-		put(APIKEY_DATES, getConfig(ENVKEY_FB_INSIGHT_DATE_PRESET));
-		put(APIKEY_LEVEL, "ad");
-		put(APIKEY_TIME_INC, "1");
+	private static final HashMap<String,String> INSIGHT_FIELD_MAPS = new HashMap<String,String>() {{
+		put("impressions", null);
+		put("reach", null);
+		put("spend", "cost");
+		put("clicks", null);
+//		put("account_currency", "currency");
 	}};
 	
 	
@@ -187,9 +178,11 @@ class ServiceFacebook extends AbstractService {
 //	private final ArrayList<JsonObject> _drilldowns = new ArrayList<JsonObject>();
 	
 	private static String buildAPIPath(String endpoint, Map<String,String> params) {
-		String path = String.format("%s%s", endpoint.startsWith("/") ? "" : "/", endpoint);
+		String path = String.format("%s%s", 
+				endpoint.contains("://") || endpoint.startsWith("/") ? "" : "/", 
+				endpoint);
 		
-		// TODO: remove host if contains
+		// TODO: remove host if it contains
 
 		if(params!=null && 0<params.size()) {
 			for(Entry<String,String> p : params.entrySet()) {
@@ -207,8 +200,9 @@ class ServiceFacebook extends AbstractService {
 	 * @return responsed json object
 	 */
 	private static JsonObject getAPI(String endpoint, Map<String,String> params) {
-		String url = String.format("%s%s",
-				getConfig(ENVKEY_FB_API_HOST), buildAPIPath(endpoint, params));
+		final String url = String.format("%s%s",
+				endpoint.contains("://") ? "" : getConfig(ENVKEY_FB_API_HOST), 
+				buildAPIPath(endpoint, params));
 		
 		try {
 			if(DEBUGGINGS) {
@@ -228,36 +222,6 @@ class ServiceFacebook extends AbstractService {
 		}
 	}
 	
-	/**
-	 * build batch request
-	 * @param path
-	 * @return
-	 */
-	protected static JsonObject _batchAPIRequest(String path) {
-		final JsonObject batch = new JsonObject();
-		batch.addProperty(APIKEY_BATCH_METHOD, "GET");
-		batch.addProperty(APIKEY_BATCH_PATH, path);
-		return batch;
-	}
-	
-	/**
-	 * batch processing apis
-	 * @param access
-	 * @param paths
-	 * @return
-	 */
-	protected static JsonArray batchAPI(String access, ArrayList<String> paths) {
-		final JsonArray batches = new JsonArray();
-		for(String path : paths)
-			batches.add(_batchAPIRequest(path));
-		final String[] values = new String[] {
-			String.format("%s=%s", APIKEY_ACCESS_TOKEN, access),
-			String.format("batch=%s", batches.toString()),
-		};
-		
-		final String resp = MonsterUtils.executeCURLPost(getConfig(ENVKEY_FB_API_HOST), values, 30);
-		return MonsterUtils.parseJson(resp).getAsJsonArray();
-	}
 	
 	/**
 	 * @param endpoint
@@ -276,6 +240,12 @@ class ServiceFacebook extends AbstractService {
 		super(user);
 	}
 	
+	@Override
+	protected Account addAccount(String accountId) {
+		if(accountId.startsWith("act_"))
+			accountId = accountId.substring(4);
+		return super.addAccount(accountId);
+	}
 	
 	
 	/**
@@ -355,18 +325,6 @@ class ServiceFacebook extends AbstractService {
 		}
 	}
 
-	private void _retrieveCreativeInsightBuildingParams(String afters) {
-		_apiParams.clear();
-		_apiParams.put(APIKEY_FILEDS, getConfig(ENVKEY_FB_ADINSHGIT_FIELDS));
-		_apiParams.put(APIKEY_DATES, getConfig(ENVKEY_FB_INSIGHT_DATE_PRESET));
-		_apiParams.put(APIKEY_LEVEL, "ad");
-		_apiParams.put(APIKEY_TIME_INC, "1");
-		_apiParams.put(APIKEY_LIMITS, "50");
-		if(afters!=null) {
-			_apiParams.put(APIKEY_PAGING_NEXT_CURSOR, afters);
-		}
-	}
-	
 
 	/**
 	 * retrieve user info: facebook.
@@ -390,118 +348,164 @@ class ServiceFacebook extends AbstractService {
 		} while(afters!=null);
 	}
 	
-	protected void buildPathBatches(
-			ArrayList<String> batches, 
-			Collection<String> accountIds, 
-			Function<String,Boolean> validateFn,
-			Function<String,String> buildFn) {
-		batches.clear();
-		
-		for(String accId : accountIds) {
-			if(!validateFn.apply(accId))
-				continue;
-			
-			final String apiPath = buildFn.apply(accId);
-			batches.add(apiPath);
-		}
-	}
-	
-	protected void _retrieveCreativeDataParseDrilldowns(JsonObject obj, TreeMap<String,Boolean> statMap, String nextKey) {
-		final JsonArray downs = obj.get(nextKey).getAsJsonObject()
-				.get(APIKEY_DATA).getAsJsonArray();
-		for(JsonElement _down : downs) {
-			final JsonObject down = _down.getAsJsonObject();
-			final String id = down.get(APIKEY_ID).getAsString();
-			if(!statMap.containsKey(id)) {
-				final String stat = down.get(APIKEY_STATUS).getAsString();
-				statMap.put(id, APIVAL_STATUS_ACTIVE.equalsIgnoreCase(stat));
+	protected boolean _retrieveCreativeDataDrillDownParseStack(ArrayList<JsonObject> stack, JsonObject obj, String apikey) {
+		if(obj.has(apikey)) {
+			final JsonArray arr = obj.get(apikey).getAsJsonObject()
+					.getAsJsonArray(APIKEY_DATA);
+			for(JsonElement e : arr) {
+				final JsonObject rs = e.getAsJsonObject();
+				stack.add(rs);
 			}
-			
-//			_drilldowns.add(down);
+			return true;
+		} else {
+			return false;
 		}
 	}
 	
-	
-	protected void _retrieveCreativeDataParse(JsonElement respElement, ArrayList<String> batches) {
-		final JsonObject respObj = respElement.getAsJsonObject();
-		final String respBody = respObj.get("body").getAsString();
-		final JsonObject resp = MonsterUtils.parseJson(respBody).getAsJsonObject();
-		final String next = getAPIResponseNextPaged(resp, true);
-		final String error = getAPIResponseHasError(resp);
-		if(error!=null) {
-			// TODO: exception
+
+	protected void _retrieveCreativeDataDrillDownBatch(ArrayList<JsonObject> stack) {
+		_apiParams.clear();
+		// pop single
+		final String reqpath = _batches.remove(0);
+		final JsonObject rs = getAccessedAPI(reqpath);
+		
+		// get account - campaign - adset - ad info
+		stack.clear();
+		stack.add(rs);
+		
+		final String[] apikeysbyLevel = new String[] {
+			APIKEY_CAMPAIGNS, APIKEY_ADSETS, APIKEY_ADS,
+		};
+		boolean isLeaf = true;
+
+		while(!stack.isEmpty()) {
+			final JsonObject resp = stack.remove(0);
+			if(!resp.has(APIKEY_DATA)) continue;
+			final JsonArray values = resp.get(APIKEY_DATA).getAsJsonArray();
+			final String nextAPI = getAPIResponseNextPaged(resp, true);
+			if(nextAPI != null)
+				_batches.add(nextAPI);
+			
+			
+			for(JsonElement _v : values) {
+				final JsonObject val = _v.getAsJsonObject();
+				
+				isLeaf = true;
+				for(String apikey : apikeysbyLevel) {
+					if(_retrieveCreativeDataDrillDownParseStack(stack, val, apikey)) {
+						isLeaf = false;
+						break;
+					}
+				}
+				
+				// appending account, campaign, ads when the term is leaf (ad)
+				if(isLeaf) {
+					final String accId = val.get(APIKEY_ADACCOUNT_ID).getAsString();
+					if(!val.has(APIKEY_CAMPAIGN_ID)) continue;
+					final String cmpId = val.get(APIKEY_CAMPAIGN_ID).getAsString();
+					if(!val.has(APIKEY_ADSET_ID)) continue;
+					final String grpId = val.get(APIKEY_ADSET_ID).getAsString();
+					if(!val.has(APIKEY_ID)) continue;
+					final String adId = val.get(APIKEY_ID).getAsString();
+					
+//					final Account account = Account.get(accId);
+					if(!_accounts.containsKey(accId))
+						addAccount(accId);
+					final Account account = Account.get(accId);
+					final Campaign campaign = account.addCampaign(cmpId);
+					final AdGroup group = campaign.addGroup(grpId);
+					
+					// TEST
+					System.out.println(String.format("%s - %s - %s - %s", accId, cmpId, grpId, adId));
+					
+					// init creatives
+					group.addCreative(adId);
+				}
+			}
 		}
-		if(next!=null) {
-			batches.add(next);
-		}
-		
-		// drill down into ads
-//		_drilldowns.clear();
-//		_drilldowns.add(resp);
-//		while(!_drilldowns.isEmpty()) {
-//			// pop one
-//			final JsonObject obj = _drilldowns.remove(0);
-//			// is account info
-//			if(obj.has(APIKEY_CAMPAIGNS)) {
-//				_retrieveCreativeDataParseDrilldowns(resp, _campaignStats, APIKEY_CAMPAIGNS);
-//			} else if(obj.has(APIKEY_ADSETS)) {
-//				_retrieveCreativeDataParseDrilldowns(resp, _adgroupStats, APIKEY_ADSETS);
-//				final String _since = obj.get(APIKEY_PERIOD_FROM).getAsString();
-//				final String _until = obj.get(APIKEY_PERIOD_TILL).getAsString();
-//			} else if(obj.has(APIKEY_CAMPAIGN_ID) && obj.has(APIKEY_ADSET_ID)) {
-//				final String accountId = obj.get(APIKEY_ADACCOUNT_ID).getAsString();
-//				final String campaignId = obj.get(APIKEY_CAMPAIGN_ID).getAsString();
-//				final String adsetId = obj.get(APIKEY_ADSET_ID).getAsString();
-//				final String creativeId = obj.get(APIKEY_ID).getAsString();
-//				
-//				// block running if creative presented
-//				if(_creativeMap.containsKey(creativeId)) continue;
-//				
-//				final JsonObject _creative = obj.get(APIKEY_ADCREATIVES).getAsJsonObject();
-//				
-//				final Account account = _accounts.get(accountId);
-//				final CampaignCreative cc = account.creative(campaignId, adsetId, creativeId);
-//				_creativeMap.put(creativeId, cc);
-//			}
-//		}
-		
-		
 	}
 
+	
+	protected void _retrieveCreativeDataParse(JsonObject data) {
+		if(!(data.has(APIKEY_ADACCOUNT_ID) 
+		&& data.has(APIKEY_CAMPAIGN_ID)
+		&& data.has(APIKEY_ADSET_ID))) return;
+		final String accId = data.get(APIKEY_ADACCOUNT_ID).getAsString();
+		final String cmpId = data.get(APIKEY_CAMPAIGN_ID).getAsString();
+		final String grpId = data.get(APIKEY_ADSET_ID).getAsString();
+		final String adId = data.get("ad_id").getAsString();
+		final String _date = data.get("date_start").getAsString();
+		
+		final Account account = _accounts.get(accId);
+		final Campaign campaign = account.addCampaign(cmpId);
+		final AdGroup group = campaign.addGroup(grpId);
+		final Creative ad = group.addCreative(adId);
+		
+		final LocalDate date = LocalDate.parse(_date);
+		
+		// setup values
+		_apiParams.clear();
+		for(Entry<String,JsonElement> ev : data.entrySet()) {
+			final String ek = ev.getKey();
+			if(!INSIGHT_FIELD_MAPS.containsKey(ek)) continue;
+			final String attr = INSIGHT_FIELD_MAPS.get(ek) != null ? INSIGHT_FIELD_MAPS.get(ek) : ek;
+			_apiParams.put(attr, ev.getValue().getAsString());
+		}
+		
+		if(data.has("actions")) {
+			for(Entry<String,JsonElement> e : data.get("actions").getAsJsonObject().entrySet()) {
+				final JsonObject v = e.getValue().getAsJsonObject();
+				final String ek = v.get("action_type").getAsString();
+				final String ev = v.get("value").getAsString();
+				_apiParams.put(ek, ev);
+			}
+		}
+		ad.putValuesAt(date, _apiParams);
+		
+	}
+	
+	protected void _batchAccountString(Function<String, String> urlFn) {		
+		for(Account account : _accounts.values()) {
+			if(account.hasSet()) continue;
+			final String path = urlFn.apply(account.getId());
+			_batches.add(path);
+		}
+	}
 	/**
 	 *
 	 */
 	@Override
 	protected void retrieveCreativeData() {
-		// build seed batches
-		buildPathBatches(_batches, _accounts.keySet(),
-				(String id) -> !_accounts.containsKey(id),
-				(String id) -> buildAPIPath(id, AD_ACCOUNT_INFO_PARAMS));
+		_batches.clear();
+		final ArrayList<JsonObject> stack = new ArrayList<JsonObject>();
+		
+		// append account ids
+//		_batchAccountString((accId) -> String.format("/me/adaccounts?fields=%s", getConfig(ENVKEY_FB_ADACCOUNT_FIELDS)));
+		final String seedPath = String.format("/me/adaccounts?fields=%s", getConfig(ENVKEY_FB_ADACCOUNT_FIELDS));
+		_batches.add(seedPath);
 		
 		while(!_batches.isEmpty()) {
-			// trim to size
-			final List<String> trimmed = _batches.subList(0, BATCH_LIMIT);
-						
-			// responses
-			while(!_batches.isEmpty()) {
-				final JsonArray resps = batchAPI(_auth.getAccessToken(), _batches);
-								
-				for(JsonElement _resp : resps) {
-					final JsonObject resp = _resp.getAsJsonObject();
-					final String next = getAPIResponseNextPaged(resp);
-					final String error = getAPIResponseHasError(resp);
-					if(error!=null) continue;
-					if(next!=null) {
-//						_batches.add(buildAPIPath(endpoint, params));
-					}
-				}
-			}
-			
-			_batches.removeAll(trimmed);
-			
+			// read drilldown stack
+			_retrieveCreativeDataDrillDownBatch(stack);
 		}
 		
-		
+		// read insights
+		_batches.clear();
+		_batchAccountString((accId) -> 
+			String.format("/act_%s/insights?level=ad&time_increment=1&date_preset=%s&field=%s",
+					accId,
+					getConfig(ENVKEY_FB_INSIGHT_DATE_PRESET),
+					getConfig(ENVKEY_FB_ADINSHGIT_FIELDS)));
+		while(!_batches.isEmpty()) {
+			final String path = _batches.remove(0);
+			final JsonObject resp = getAccessedAPI(path);
+			_retrieveCreativeDataParse(resp);
+			
+			final String nextPath = getAPIResponseNextPaged(resp, true);
+			if(nextPath!=null)
+				_batches.add(nextPath);
+			
+		}
 	}
 
 	

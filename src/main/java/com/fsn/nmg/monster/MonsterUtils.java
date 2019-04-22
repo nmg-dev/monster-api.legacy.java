@@ -43,7 +43,7 @@ public class MonsterUtils {
 	
 	public static String executeCURL(String url, int timeout) {
 		try {
-			final String command = String.format("curl -m %d \"%s\"", timeout, url);
+			final String command = String.format("curl -g -m %d \"%s\"", timeout, url);
 			return executeCommand(command);
 		} catch(IOException ex) {
 			return null;
@@ -59,6 +59,7 @@ public class MonsterUtils {
 				params.append(String.format(" -F '%s'", val));
 			}
 			final String command = String.format("curl -m %d %s \"%s\"", timeout, params.toString(), url);
+			System.out.println(command);
 			return executeCommand(command);
 		} catch(IOException ex) {
 			return null;

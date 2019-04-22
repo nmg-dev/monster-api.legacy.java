@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import org.junit.Test;
@@ -13,6 +14,7 @@ import org.junit.Test;
 import com.fsn.nmg.monster.AppConfigure;
 import com.fsn.nmg.monster.datamodel.AccessAccount;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 public class FacebookApiTest {
@@ -81,31 +83,20 @@ public class FacebookApiTest {
 		assertFalse(tokenInfo.containsKey("access_token"));
 	}
 	
+	
 	@Test
-	public void testBuildBatchAPIRequest() {
-		final String[] paths = new String[] {"/me", "/act", "/campaigns"};
-		final JsonArray batches = new JsonArray();
-		for(String p : paths) {
-			final JsonObject obj = ServiceFacebook._batchAPIRequest(p);
-			assertTrue(obj.has("method"));
-			assertTrue(obj.has("relative_url"));
-			batches.add(obj);
-			
-		}
+	public void testCreativeDataRequest() {
+		final String access = AppConfigure.get().getProperty(ENVKEY_TEST_ACCESS);
+		final AccessAccount user = new AccessAccount(access, null);
+		final ServiceFacebook fb = new ServiceFacebook(user);
+		// get user info first
+		fb.retrieveUserInfo();
 		
-		assertEquals(paths.length, batches.size());
-		for(int i=0; i<paths.length; i++) {
-			final JsonObject obj = batches.get(i).getAsJsonObject();
-			final String p = paths[i];
-			assertEquals("GET", obj.get("method").getAsString());
-			assertEquals(p, obj.get("relative_url").getAsString());
-		}
+		// then creatives
+		fb.retrieveCreativeData();
+		assertTrue(true);
+		
+//		assertTrue(user.)
 	}
-	
-	@Test
-	public void testBatchAPIs() {
-		fail("not implemented");
-	}
-	
 
 }

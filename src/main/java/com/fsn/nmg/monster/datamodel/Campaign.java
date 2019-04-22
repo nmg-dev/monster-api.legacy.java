@@ -30,8 +30,9 @@ public class Campaign extends AbstractModel<Account, AdGroup> {
 		return getParent();
 	}
 	
+	
 	/**
-	 * public alias of get child
+	 * public alias of add child
 	 * @param groupId
 	 * @return
 	 */
