@@ -36,7 +36,7 @@ public class Campaign extends AbstractModel<Account, AdGroup> {
 	 * @param groupId
 	 * @return
 	 */
-	public AdGroup addGroup(String groupId) {
+	public AdGroup adgroup(String groupId) {
 		return addChild(groupId);
 	}
 

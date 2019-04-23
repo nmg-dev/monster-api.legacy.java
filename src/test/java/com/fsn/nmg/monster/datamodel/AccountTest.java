@@ -1,12 +1,14 @@
 package com.fsn.nmg.monster.datamodel;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AccountTest {
 	final static String singleAccountID = "";
 	final static String singleCampaignId = "the_campaign";
@@ -15,13 +17,13 @@ public class AccountTest {
 	
 
 	@Test
-	public void testCreateFromTotal() {
+	public void test01CreateFromTotal() {
 		assertNotNull(Account.get(singleAccountID));
 		
 	}
 	
 	@Test 
-	public void testRetrieveFromTotal() {
+	public void test02RetrieveFromTotal() {
 		final Account acc = Account.get(singleAccountID);
 		assertNotNull(acc);
 		assertEquals(singleAccountID, acc.getId());
@@ -31,11 +33,11 @@ public class AccountTest {
 	
 	
 	@Test
-	public void testReferalAccountCampaign() {
+	public void test03ReferalAccountCampaign() {
 		final Account acc = Account.get(singleAccountID);
-		final Campaign cmp = acc.addCampaign(singleCampaignId);
-		final AdGroup grp = cmp.addGroup(singleGroupId);
-		final Creative cc = grp.addCreative(singleCreativeId);
+		final Campaign cmp = acc.campaign(singleCampaignId);
+		final AdGroup grp = cmp.adgroup(singleGroupId);
+		final Creative cc = grp.creative(singleCreativeId);
 		assertNotNull(cc);
 		
 		assertEquals(singleCampaignId, cmp.getId());

@@ -31,7 +31,7 @@ public class Account extends AbstractModel<AccessAccount, Campaign> {
 		super(id);
 	}
 	
-	public Campaign addCampaign(String campaignId) {
+	public Campaign campaign(String campaignId) {
 		return addChild(campaignId);
 	}
 	

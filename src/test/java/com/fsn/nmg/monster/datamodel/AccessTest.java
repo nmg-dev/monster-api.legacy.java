@@ -2,7 +2,9 @@ package com.fsn.nmg.monster.datamodel;
 
 import static org.junit.Assert.*;
 
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 import com.fsn.nmg.monster.AppConfigure;
 
@@ -11,18 +13,19 @@ import com.fsn.nmg.monster.AppConfigure;
  * @author yg.song@nextmediagroup.co.kr
  *
  */
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AccessTest {
 
 	/**
 	 * test building AccessAccount
 	 */
 	@Test
-	public void testCreate() {
+	public void test01Create() {
 		assertNotNull(new AccessAccount(null, null));
 	}
 	
 	@Test
-	public void testInitIdSet() {
+	public void test02InitIdSet() {
 		final AccessAccount acc = new AccessAccount(null, null);
 		assertNull(acc.getId());
 		final String testId ="test-id";
@@ -38,7 +41,7 @@ public class AccessTest {
 	}
 	
 	@Test
-	public void testGetAccess() {
+	public void test03GetAccess() {
 		final String sampleAccess = AppConfigure.get().getProperty("FB_APP_ACCESS", "test");
 		assertNotNull(sampleAccess);
 		

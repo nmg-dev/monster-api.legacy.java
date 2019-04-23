@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
@@ -74,6 +75,53 @@ public class MonsterUtils {
 		} catch(JsonParseException ex) {
 			return null;
 		} 
+	}
+	
+	public static String jsonString(JsonObject obj, String key) {
+		return jsonString(obj, key, null);
+	}
+	
+	public static String jsonString(JsonObject obj, String key, String defValue) {
+		try {
+			return obj.get(key).getAsString();
+		} catch(RuntimeException ex) {
+			return defValue;
+		}
+	}
+	
+	public static Boolean jsonBoolean(JsonObject obj, String key) {
+		return jsonBoolean(obj, key, null);
+	}
+	
+	public static Boolean jsonBoolean(JsonObject obj, String key, Boolean defValue) {
+		try {
+			return obj.get(key).getAsBoolean();
+		} catch(RuntimeException ex) {
+			return defValue;
+		}
+	}
+	
+	public static Integer jsonInteger(JsonObject obj, String key) {
+		return jsonInteger(obj, key, null);
+	}
+	
+	public static Integer jsonInteger(JsonObject obj, String key, Integer defValue) {
+		try {
+			return obj.get(key).getAsInt();
+		} catch(RuntimeException ex) {
+			return defValue;
+		}
+	}
+	
+	public static Double jsonFloat(JsonObject obj, String key) {
+		return jsonFloat(obj, key, null);
+	}
+	public static Double jsonFloat(JsonObject obj, String key, Double defValue) {
+		try {
+			return obj.get(key).getAsDouble();
+		} catch(RuntimeException ex) {
+			return defValue;
+		}
 	}
 	
 	public static JsonElement executeCURLtoJSON(String url, int timeout) {

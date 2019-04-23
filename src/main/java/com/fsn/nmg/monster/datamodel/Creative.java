@@ -13,6 +13,7 @@ import java.util.Map.Entry;
  * @author yg.song@nextmediagroup.co.kr
  *
  */
+@SuppressWarnings("rawtypes")
 public class Creative extends AbstractModel<AdGroup,AbstractModel> {
 	
 	private static final String[] ATTRIBUTE_KEYS = new String[] {

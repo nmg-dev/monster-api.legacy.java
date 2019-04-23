@@ -1,7 +1,9 @@
 package com.fsn.nmg.monster;
 
 
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 import junit.framework.TestCase;
 
@@ -10,13 +12,14 @@ import junit.framework.TestCase;
  * @author yg.song@nextmediagroup.co.kr
  *
  */
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AppConfigTest extends TestCase {
 
 	/**
 	 * testing App configure loaded and values
 	 */
 	@Test
-	public void testConfigLoaded() {
+	public void test01ConfigLoaded() {
 		final AppConfigure config = AppConfigure.get();
 		assertNotNull(config);
 		assertTrue(config.hasLoaded());
@@ -26,7 +29,7 @@ public class AppConfigTest extends TestCase {
 	 * testing configure activated
 	 */
 	@Test
-	public void testConfigActivated() {
+	public void test02ConfigActivated() {
 		final AppConfigure config = AppConfigure.get();
 		assertEquals("monster-api", config.getProperty("APP_TITLE"));
 	}

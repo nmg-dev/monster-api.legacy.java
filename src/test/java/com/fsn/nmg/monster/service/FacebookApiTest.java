@@ -4,19 +4,17 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
-import java.util.ArrayList;
 import java.util.Map;
 
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 import com.fsn.nmg.monster.AppConfigure;
 import com.fsn.nmg.monster.datamodel.AccessAccount;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class FacebookApiTest {
 	
 	/**
@@ -27,7 +25,7 @@ public class FacebookApiTest {
 	private static final String ENVKEY_TEST_ACCESS = "FB_TEST_ACCESS";
 
 	@Test
-	public void testConfigure() {
+	public void test01Configure() {
 		assertNotNull(AppConfigure.get().getProperty("FB_CLIENT_ID"));
 		assertNotNull(AppConfigure.get().getProperty("FB_CLIENT_SECRET"));
 		assertNotNull(AppConfigure.get().getProperty(ENVKEY_TEST_ACCESS));
@@ -35,7 +33,7 @@ public class FacebookApiTest {
 	}
 	
 	@Test
-	public void testMyAuthString() {
+	public void test02MyAuthString() {
 		final String idString = String.format("%x", System.currentTimeMillis());
 //		final AccessAccount nullAccount = new AccessAccount("", null);
 //		final AccessAccount idAccount = new AccessAccount("", idString);
@@ -47,7 +45,7 @@ public class FacebookApiTest {
 	}
 	
 	@Test
-	public void testAPIWithErrorToken() {
+	public void test03APIWithErrorToken() {
 		final Map<String,String> tokenInfo = ServiceFacebook.retrieveLongtermToken("");
 		assertFalse(tokenInfo.containsKey("access_token"));
 		assertTrue(tokenInfo.containsKey("error"));
@@ -55,7 +53,7 @@ public class FacebookApiTest {
 	
 	
 	@Test
-	public void testAccountRetrieval() {
+	public void test04AccountRetrieval() {
 		final String access = AppConfigure.get().getProperty(ENVKEY_TEST_ACCESS);
 		final String userId = AppConfigure.get().getProperty(ENVKEY_TEST_USERID);
 		final AccessAccount user = new AccessAccount(access, null);
@@ -68,7 +66,7 @@ public class FacebookApiTest {
 	}
 	
 	@Test
-	public void testLongtermTokenExchange() {
+	public void test05LongtermTokenExchange() {
 		final String access = AppConfigure.get().getProperty(ENVKEY_TEST_ACCESS);
 		final Map<String,String> tokenInfo = ServiceFacebook.retrieveLongtermToken(access);
 		assertNotNull(tokenInfo);
@@ -77,7 +75,7 @@ public class FacebookApiTest {
 	}	
 	
 	@Test
-	public void testLongterTokenExchangedErrors() {
+	public void test06LongterTokenExchangedErrors() {
 		final String invalidAccess = "test-access";
 		final Map<String,String> tokenInfo = ServiceFacebook.retrieveLongtermToken(invalidAccess);
 		assertFalse(tokenInfo.containsKey("access_token"));
@@ -85,7 +83,7 @@ public class FacebookApiTest {
 	
 	
 	@Test
-	public void testCreativeDataRequest() {
+	public void test07CreativeDataRequest() {
 		final String access = AppConfigure.get().getProperty(ENVKEY_TEST_ACCESS);
 		final AccessAccount user = new AccessAccount(access, null);
 		final ServiceFacebook fb = new ServiceFacebook(user);

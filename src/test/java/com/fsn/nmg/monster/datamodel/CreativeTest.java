@@ -6,8 +6,11 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class CreativeTest {
 	
 	private Creative buildCreative(String id) {
@@ -16,24 +19,25 @@ public class CreativeTest {
 	
 	private Creative buildCreative(String id, String groupId, String campaignId, String accountId) {
 		final Account account = Account.get(accountId);
-		final Campaign cmp = account.addCampaign(campaignId);
-		final AdGroup grp = cmp.addGroup(groupId);
-		return grp.addCreative(id);
+		final Campaign cmp = account.campaign(campaignId);
+		final AdGroup grp = cmp.adgroup(groupId);
+		return grp.creative(id);
 	}
 
 	@Test
-	public void testCreateCreative() {
+	public void test01CreateCreative() {
 		final String tick = String.format("%x", System.currentTimeMillis());
 		final Creative cc = buildCreative(tick);
 		
 		assertNotNull(cc);
 		assertEquals(tick, cc.getId());
 		
+		System.out.println(">>?" + cc.hasSet());
 		assertFalse(cc.hasSet());
 	}
 	
 	@Test
-	public void testCreativeSet() {
+	public void test02CreativeSet() {
 		final String tick = String.format("%x", System.currentTimeMillis());
 		final Creative cc = buildCreative(tick);
 		
@@ -51,7 +55,7 @@ public class CreativeTest {
 	}
 	
 	@Test
-	public void testPutValues() {
+	public void test03PutValues() {
 		final String tick = String.format("%x", System.currentTimeMillis());
 		final Creative cc = buildCreative(tick);
 		final String[] columnNames = new String[] {
@@ -79,7 +83,7 @@ public class CreativeTest {
 	}
 	
 	@Test
-	public void testActivated() {
+	public void test04Activated() {
 		final String tick = String.format("%x", System.currentTimeMillis());
 		final Creative cc = buildCreative(tick);
 		

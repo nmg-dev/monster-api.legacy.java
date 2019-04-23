@@ -24,7 +24,12 @@ public class AdGroup extends AbstractModel<Campaign, Creative> {
 	}
 	
 	
-	public Creative addCreative(String id) {
+	/**
+	 * public alias of add child
+	 * @param id
+	 * @return
+	 */
+	public Creative creative(String id) {
 		return addChild(id);
 	}
 	
